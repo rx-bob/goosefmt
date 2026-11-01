@@ -1,0 +1,25 @@
+version: '3'
+
+tasks:
+  test:
+    desc: Run Goose formatter and linter regression tests
+    cmds:
+      - goose run src/tests.goose
+
+  build:
+    desc: Build the goosefmt executable
+    cmds:
+      - goose build src/goosefmt.goose -o ./goosefmt
+
+  run:
+    desc: Run goosefmt with forwarded CLI arguments
+    cmds:
+      - goose run src/goosefmt.goose -- {{.CLI_ARGS}}
+
+  install:
+    desc: Install goosefmt to ~/.local/bin
+    deps:
+      - build
+    cmds:
+      - mkdir -p "$HOME/.local/bin"
+      - install -m 755 ./goosefmt "$HOME/.local/bin/goosefmt"
