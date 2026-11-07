@@ -3,6 +3,8 @@
 `goosefmt` is a Goose command-line formatter and linter, implemented in Goose. It uses Goose's
 standard `os` module for file access and has no third-party dependencies.
 
+Build and run it with Goose v2026.4. This is the compiler version used to verify the project.
+
 ## Run
 
 Run directly through the Goose compiler:
