@@ -110,7 +110,6 @@ fn nonfixed_initializer(tokens: lexer::Token[:], start: i64, end: i64) -> bool {
     if nonfixed_struct(tokens, tokens[start].text) {
         return true;
     }
-    // Resolve explicit local annotations when the inserted value is a variable.
     for i in start {
         if tokens[i].text != tokens[start].text {
             continue;

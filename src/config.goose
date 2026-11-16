@@ -28,6 +28,7 @@ struct Options {
     lint_reference_bind_push: bool,
     lint_split_compound_assert: bool,
     lint_bounded_control_flow: bool,
+    lint_file_summary_only: bool,
     strict_safety: bool,
 }
 
@@ -56,6 +57,7 @@ fn defaults() -> Options {
         lint_reference_bind_push: true,
         lint_split_compound_assert: true,
         lint_bounded_control_flow: true,
+        lint_file_summary_only: true,
         strict_safety: false,
     };
 }
@@ -182,6 +184,10 @@ fn set_extended_boolean(options: Options&, key: const u8[:], enabled: bool) -> c
     }
     if key == "strict_safety" {
         options.strict_safety = enabled;
+        return "";
+    }
+    if key == "file_summary_only" {
+        options.lint_file_summary_only = enabled;
         return "";
     }
     return "unknown setting";

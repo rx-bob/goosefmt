@@ -1,6 +1,8 @@
 // Configurable Goose style diagnostics.
 namespace linter;
 
+import std;
+
 import config;
 import formatter;
 import lexer;
@@ -209,6 +211,18 @@ fn lint_declaration_name(tokens: lexer::Token[:], index: i64, global: bool, issu
     }
 }
 
+fn lint_comment(token: lexer::Token, first: bool, issues: Issue[>..]&) {
+    if token.kind != lexer::COMMENT {
+        return;
+    }
+    if first && token.line == 1 && token.text.starts_with("//") {
+        if trim(token.text[2..]).len > 0 {
+            return;
+        }
+    }
+    add(issues, token.line, token.column, 20);
+}
+
 fn lint(source: const u8[:], options: config::Options) -> Issue[>..] {
     let tokens = lexer::lex(source);
     let generic = generic_angle_tokens(tokens);
@@ -216,6 +230,9 @@ fn lint(source: const u8[:], options: config::Options) -> Issue[>..] {
     lint_lines(source, tokens, options, issues);
     var depth = nesting();
     for i in tokens.len {
+        if options.lint_file_summary_only {
+            lint_comment(tokens[i], i == 0, issues);
+        }
         if options.lint_naming {
             lint_declaration_name(tokens, i, at_top(depth), issues);
         }

@@ -104,7 +104,10 @@ fn rule_name(rule: i32) -> const u8[:] {
     if rule == 18 {
         return "G018";
     }
-    return "G019";
+    if rule == 19 {
+        return "G019";
+    }
+    return "G020";
 }
 
 fn description(rule: i32) -> const u8[:] {
@@ -162,7 +165,10 @@ fn description(rule: i32) -> const u8[:] {
     if rule == 18 {
         return "split compound assert conditions into separate assertions";
     }
-    return "bound loop termination and avoid recursive functions in strict safety mode";
+    if rule == 19 {
+        return "bound loop termination and avoid recursive functions in strict safety mode";
+    }
+    return "only a nonempty // file summary on line 1 is allowed";
 }
 
 fn generic_angle_tokens(tokens: lexer::Token[:]) -> bool[>..] {

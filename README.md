@@ -58,6 +58,7 @@ const_global_naming = true
 reference_bind_push = true
 split_compound_assert = true
 bounded_control_flow = true
+file_summary_only = true
 strict_safety = false
 ```
 
@@ -78,6 +79,7 @@ The linter reports these rules:
 - `G017`: reference bindings from `.push(...)` and `.alloc_ref(...)`
 - `G018`: compound assertions
 - `G019`: visible loop termination (recursive functions are checked when `strict_safety` is enabled)
+- `G020`: only an optional, nonempty `//` file summary on physical line 1 is allowed
 
 The formatter sorts imports into package, standard library, and project module groups. It keeps
 multi-value returns, multi-bindings, and `for` headers on one line, recognizes Goose generic and
@@ -92,6 +94,12 @@ comments and blank lines. `G017` is a local, syntax-based warning: it tracks dir
 bindings and subsequent writes or links, respects local shadowing, and excludes recognized
 variable-size values. It does not resolve types across modules. `G019` checks for visible exits
 or a step counter with an asserted bound; it does not prove that a loop terminates.
+
+`G020` is enabled by default through `file_summary_only`. The summary must precede all code;
+leading spaces are allowed, but leading blank lines are not. All other comments are reported,
+including trailing comments and block comments, with no exceptions for licenses or tool directives.
+Files without comments are allowed. The rule checks placement and nonempty text, not summary accuracy.
+Comment markers inside literals are ignored, and formatting continues to preserve comments.
 
 Run `task test` for the Goose regression suite, `task build` to build the executable, and
 `./goosefmt check src` to check this repository with its default limits. The regression runner

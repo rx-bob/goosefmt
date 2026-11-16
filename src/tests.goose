@@ -194,6 +194,38 @@ fn test_assertions_and_loops() {
     expect_rule("recursive fn f(){}\n", 19, 0);
 }
 
+fn test_comment_policy() {
+    expect_rule("", 20, 0);
+    expect_rule("namespace demo;\n", 20, 0);
+    expect_rule("// File summary.\nnamespace demo;\n", 20, 0);
+    expect_rule("  // File summary.\n", 20, 0);
+    expect_rule("// File summary.", 20, 0);
+    expect_rule("// File summary.\r\nnamespace demo;\r\n", 20, 0);
+    expect_rule("\n// File summary.\n", 20, 1);
+    expect_rule("//\n", 20, 1);
+    expect_rule("// \t\r\n", 20, 1);
+    expect_rule("// File summary.\n// More prose.\n", 20, 1);
+    expect_rule("namespace demo; // Trailing comment.\n", 20, 1);
+    expect_rule("/* Block summary. */\n", 20, 1);
+    expect_rule("/* Outer\n /* nested */\n */\n", 20, 1);
+    expect_rule("/* Block */ // Line comment.\n", 20, 2);
+    expect_rule("// File summary.\nfn f() {\n    // Explanation.\n    use(); /* Inline. */\n}\n", 20, 2);
+    expect_rule("namespace demo;\n// SPDX-License-Identifier: MIT\n// tool:ignore\n", 20, 2);
+    expect_rule("let URL = \"https://example.com/*path*/\";\n", 20, 0);
+    expect_rule("let TEXT = \"escaped \\\" // still a string\";\n", 20, 0);
+    expect_rule("let TEXT = \"\"\"\n// text\n/* text */\n\"\"\";\n", 20, 0);
+    expect_rule("let SLASH = '/';\n", 20, 0);
+    var options = config::defaults();
+    assert(config::set_boolean(options, "lint", "file_summary_only", "false") == "");
+    assert(count_rule("/* Block */\n// Other comment.\n", 20, options) == 0);
+    assert(config::set_boolean(options, "lint", "file_summary_only", "true") == "");
+    let issues = linter::lint("// File summary.\nnamespace demo; // Trailing comment.\n", options);
+    assert(issues.len == 1);
+    assert(issues[0].rule == 20);
+    assert(issues[0].line == 2);
+    assert(issues[0].column == 17);
+}
+
 fn test_limits_and_configuration() {
     var source: u8[>..] = [];
     source.append("fn f(){\n");
@@ -254,6 +286,7 @@ fn main() {
     test_parens_and_constants();
     test_reference_bindings();
     test_assertions_and_loops();
+    test_comment_policy();
     test_limits_and_configuration();
     test_literal_preservation();
     let argv = args();

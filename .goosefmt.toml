@@ -24,4 +24,5 @@ const_global_naming = true
 reference_bind_push = true
 split_compound_assert = true
 bounded_control_flow = true
+file_summary_only = true
 strict_safety = false
